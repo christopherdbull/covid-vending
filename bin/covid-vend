@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'rubygems'
+require 'open3'
+require 'commander/import'
+require './lib/covid_vend'
+require './lib/db_adapter'
+
+program :name, 'covid-vend'
+program :version, '0.0.1'
+program :description, 'A vending machine made for these strange times'
+
+command :init do |c|
+  c.syntax = 'covid-vend init'
+  c.summary = 'Initalise the machine'
+  c.example 'description', 'command example'
+  c.action do
+    # Create the DB
+    _stdout, status = Open3.capture2('touch machine-db.db')
+    if status.success?
+      begin
+        adapter = DBAdapter.new
+      rescue StandardError => e
+        abort e.message
+      end
+
+      # Check if the init migration has run already
+      if adapter.client["SELECT name FROM sqlite_master WHERE type='table' AND name='items'"].empty?
+        adapter.seed_db
+        say 'CovidVend is GO 🚀'
+      else
+        abort 'Already Initialized 👍'
+      end
+    else
+      abort 'Unable to create DB'
+    end
+  end
+end
+
+command :purchase_item do |c|
+  c.syntax = 'covid-vend purchase_item [options]'
+  c.summary = ''
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    # Do something or c.when_called Covid-vend::Commands::Purchase_item
+  end
+end
+
+command :update_item do |c|
+  c.syntax = 'covid-vend update_item [options]'
+  c.summary = ''
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    # Do something or c.when_called Covid-vend::Commands::Update_item
+  end
+end
+
+command :update_change do |c|
+  c.syntax = 'covid-vend update_change [options]'
+  c.summary = ''
+  c.description = ''
+  c.example 'description', 'command example'
+  c.option '--some-switch', 'Some switch that does something'
+  c.action do |args, options|
+    # Do something or c.when_called Covid-vend::Commands::Update_change
+  end
+end
+
