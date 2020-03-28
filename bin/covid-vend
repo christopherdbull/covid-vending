@@ -5,6 +5,7 @@
 require 'rubygems'
 require 'open3'
 require 'commander/import'
+require 'terminal-table'
 require './lib/covid_vend'
 require './lib/db_adapter'
 
@@ -51,24 +52,47 @@ command :purchase_item do |c|
 end
 
 command :update_item do |c|
-  c.syntax = 'covid-vend update_item [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
-  c.action do |args, options|
-    # Do something or c.when_called Covid-vend::Commands::Update_item
+  c.syntax = 'covid-vend update_item ITEM_NAME QTY'
+  c.summary = 'Updates Items and Quantities in the machine'
+  c.description = 'This method will increment the available quantity for any items already in the machine. If the item is not already present, it adds it with the quantity provided'
+  c.example 'Update Toilet Paper', 'covid-vend update_item "Toilet Paper" 20'
+  c.action do |args, _options|
+    abort "Too many args" if args.length > 2
+    name, quantity = args
+    quantity = quantity.to_i
+    if CovidVend.new.update_item(name: name, quantity: quantity)
+      say "Added #{quantity} to #{name}"
+    else
+      abort "Unable to add #{quantity} to #{name}"
+    end
   end
 end
 
 command :update_change do |c|
-  c.syntax = 'covid-vend update_change [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
-  c.action do |args, options|
-    # Do something or c.when_called Covid-vend::Commands::Update_change
+  c.syntax = 'covid-vend update_change DENOMINATION QTY'
+  c.summary = 'Increments the change for a given denomination by a given quantity'
+  c.example 'update £1', 'covid-vend update_change £1 20'
+  c.action do |args, _options|
+    abort "Too many args" if args.length > 2
+    denomination, quantity = args
+    quantity = quantity.to_i
+    if CovidVend.new.update_change(denomination: denomination, quantity: quantity) == 1
+      say "Added #{quantity} to #{denomination}"
+    else
+      abort "Unable to add #{quantity} to #{denomination}"
+    end
+  end
+end
+
+command :available_items do |c|
+  c.syntax = 'covid-vend available_items'
+  c.summary = 'Lists all available items'
+  c.action do |args, _options|
+    abort "Too many args" if args.length > 0
+    items = CovidVend.new.available_items
+    items = items.to_a.map{ |n| n.values }
+    table = Terminal::Table.new title: 'Available Items', headings: ['Name', 'Quantity'], rows: items.to_a
+    say table
   end
 end
 

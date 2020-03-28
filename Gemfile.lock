@@ -20,6 +20,9 @@ GEM
     rspec-support (3.9.2)
     sequel (5.30.0)
     sqlite3 (1.4.2)
+    terminal-table (1.8.0)
+      unicode-display_width (~> 1.1, >= 1.1.1)
+    unicode-display_width (1.7.0)
 
 PLATFORMS
   ruby
@@ -29,6 +32,7 @@ DEPENDENCIES
   rspec
   sequel
   sqlite3
+  terminal-table
 
 BUNDLED WITH
    2.1.4

@@ -13,13 +13,13 @@ class DBAdapter
 
   def seed_db()
     client.create_table? :change do
-      String :denomination
-      Integer :quantity
+      String :denomination, unique: true, null: false
+      Integer :quantity, null: false
     end
 
     client.create_table? :items do
-      String :name
-      Integer :quantity_available
+      String :name, unique: true, null: false
+      Integer :quantity, null: false
     end
 
     change = client.from :change
@@ -33,9 +33,9 @@ class DBAdapter
     change.insert(denomination: '£2', quantity: 100)
 
     items = client.from :items
-    items.insert(name: 'Toilet Roll', quantity_available: 2)
-    items.insert(name: 'Canned Tomatoes', quantity_available: 0)
-    items.insert(name: 'Sainsburys Lager', quantity_available: 5)
+    items.insert(name: 'Toilet Roll', quantity: 2)
+    items.insert(name: 'Canned Tomatoes', quantity: 0)
+    items.insert(name: 'Sainsburys Lager', quantity: 5)
   end
 
   def change
