@@ -8,6 +8,7 @@ require 'commander/import'
 require 'terminal-table'
 require './lib/covid_vend'
 require './lib/db_adapter'
+require './lib/change'
 
 program :name, 'covid-vend'
 program :version, '0.0.1'
@@ -45,7 +46,24 @@ command :purchase_item do |c|
   c.summary = 'Purchase an item from the covid vending machine. Will ask you to input change'
   c.example 'purchase', 'covid-vend purchase_item "Toilet Paper" 1'
   c.action do |args, options|
-    # Do something or c.when_called Covid-vend::Commands::Purchase_item
+    abort "Too many args" if args.length > 2
+    item, quantity = args
+    say "Great! How about some change then?"
+    change_input = {}
+    Change::CHANGE_VALUES.each do |k, _v|
+      change_input[k] = ask "How many #{k} coins are you paying with?", Integer
+    end
+    change = Change.new(change_input)
+    quantity = quantity.to_i
+    output = CovidVend.new.make_purchase(name: item, quantity: quantity, change_presented: change)
+    case output
+    when String
+      abort output
+    when Hash
+      say "Thanks for stopping by!"
+      say "Here's your #{output[:quantity]} #{output[:item]}"
+      say "And here's your change: #{output[:change_returned]}"
+    end
   end
 end
 

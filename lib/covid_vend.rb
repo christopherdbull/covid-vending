@@ -26,7 +26,7 @@ class CovidVend
   end
 
   def make_purchase(name:, quantity:, change_presented:)
-    item = db_adapter.items.where(Sequel.lit('name = ? AND quantity > ?', name, quantity)).first
+    item = db_adapter.items.where(Sequel.lit('name = ? AND quantity >= ?', name, quantity)).first
     return "error: unable to supply item" unless item
 
     purchase_total = item[:price_pennies] * quantity
@@ -48,6 +48,6 @@ class CovidVend
 
     #decrement stocke levels
     db_adapter.items.where(name: name).update(quantity: item[:quantity] - quantity)
-    {item: item[:name], quantity: quantity, change_returned: change_returned}
+    {item: item[:name], quantity: quantity, change_returned: change_returned.values.to_s}
   end
 end
