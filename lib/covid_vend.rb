@@ -48,6 +48,7 @@ class CovidVend
 
     #decrement stocke levels
     db_adapter.items.where(name: name).update(quantity: item[:quantity] - quantity)
+
     {item: item[:name], quantity: quantity, change_returned: change_returned.values.to_s}
   end
 end
