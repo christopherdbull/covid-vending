@@ -15,10 +15,11 @@ Ensure you have `ruby` and `sqlite3` installed, then run:
 ## Development
 Missing something? Really wish the output was ASCII colour formatted? Modify to your heart's content. The core business logic lives in `/lib`.  The main entry point to the vending machine is `covid_vend.rb`
 
-Tests live in `/spec`. Run these with `bundle exec rspec spec`. Currently you need to seed the DB first to run this tests, do this with the `init` command
+Tests live in `/spec`. Run these with `bundle exec rspec spec`. Currently you need to seed the DB first to run the tests, do this with the `init` command
 
 ## Next Steps
 - Use an in-memory DB for tests
 - Handle duplicate entries gracefuly
+- Potential race condition with change if requests made concurrently, move to transaction
 
 

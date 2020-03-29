@@ -41,26 +41,24 @@ command :init do |c|
 end
 
 command :purchase_item do |c|
-  c.syntax = 'covid-vend purchase_item [options]'
-  c.summary = ''
-  c.description = ''
-  c.example 'description', 'command example'
-  c.option '--some-switch', 'Some switch that does something'
+  c.syntax = 'covid-vend purchase_item ITEM QTY'
+  c.summary = 'Purchase an item from the covid vending machine. Will ask you to input change'
+  c.example 'purchase', 'covid-vend purchase_item "Toilet Paper" 1'
   c.action do |args, options|
     # Do something or c.when_called Covid-vend::Commands::Purchase_item
   end
 end
 
 command :update_item do |c|
-  c.syntax = 'covid-vend update_item ITEM_NAME QTY'
+  c.syntax = 'covid-vend update_item ITEM_NAME QTY PRICE'
   c.summary = 'Updates Items and Quantities in the machine'
-  c.description = 'This method will increment the available quantity for any items already in the machine. If the item is not already present, it adds it with the quantity provided'
-  c.example 'Update Toilet Paper', 'covid-vend update_item "Toilet Paper" 20'
+  c.description = 'This method will increment the available quantity for any items already in the machine. If the item is not already present, it adds it with the quantity provided. Price is optional and in Pennies'
+  c.example 'Update Toilet Paper', 'covid-vend update_item "Toilet Paper" 20 200'
   c.action do |args, _options|
-    abort "Too many args" if args.length > 2
-    name, quantity = args
+    abort "Too many args" if args.length > 3
+    name, quantity, price = args
     quantity = quantity.to_i
-    if CovidVend.new.update_item(name: name, quantity: quantity)
+    if CovidVend.new.update_item(name: name, quantity: quantity, price: price)
       say "Added #{quantity} to #{name}"
     else
       abort "Unable to add #{quantity} to #{name}"

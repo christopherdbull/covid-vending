@@ -20,6 +20,7 @@ class DBAdapter
     client.create_table? :items do
       String :name, unique: true, null: false
       Integer :quantity, null: false
+      Integer :price_pennies, null: false
     end
 
     change = client.from :change
@@ -33,9 +34,9 @@ class DBAdapter
     change.insert(denomination: '£2', quantity: 100)
 
     items = client.from :items
-    items.insert(name: 'Toilet Roll', quantity: 2)
-    items.insert(name: 'Canned Tomatoes', quantity: 0)
-    items.insert(name: 'Sainsburys Lager', quantity: 5)
+    items.insert(name: 'Toilet Roll', quantity: 2, price_pennies: 500)
+    items.insert(name: 'Canned Tomatoes', quantity: 0, price_pennies: 400)
+    items.insert(name: 'Sainsburys Lager', quantity: 5, price_pennies: 1)
   end
 
   def change
@@ -44,5 +45,16 @@ class DBAdapter
 
   def items
     client.from :items
+  end
+  
+  def update_change(change:, pos_neg:)
+    change.values.each do |key, value|
+      case pos_neg
+      when :pos
+        self.change.where(denomination: key).update(quantity: Sequel[:quantity] + value)
+      when :neg
+        self.change.where(denomination: key).update(quantity: Sequel[:quantity] - value)
+      end
+    end
   end
 end
